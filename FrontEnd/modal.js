@@ -1,7 +1,7 @@
-const modal = document.getElementById("myModal");
+const modal = document.querySelector("myModal");
 
 
-const btn = document.getElementById("modalbtn");
+const btn = document.querySelector("modalbtn");
 
 
 const span = document.getElementsByClassName("close")[0];

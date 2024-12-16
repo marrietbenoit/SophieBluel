@@ -1,6 +1,6 @@
 //retrieve array "works" from API
 let allworks = window.localStorage.getItem("allworks");
-console.log(allworks);
+// console.log(allworks);
 
 if (allworks === null) {
   getWorks();
@@ -20,7 +20,7 @@ function generateWorks(works) {
   for (let i = 0; i < works.length; i++) {
     const work = works[i];
     const gallery = document.querySelector(".gallery");
-    
+
     const figure = document.createElement("figure");
 
     const imageElement = document.createElement("img");
@@ -36,6 +36,8 @@ function generateWorks(works) {
 }
 
 //for buttons
+//retrieve btns and add listener
+//empty gallery and replace with targegted elements
 const btnTous = document.getElementById("btn-tous");
 const btnObjets = document.getElementById("btn-objets");
 const btnApartements = document.getElementById("btn-appartements");
@@ -46,38 +48,32 @@ btnObjets.addEventListener("click", filterObjets);
 btnApartements.addEventListener("click", filterAppartement);
 btnHotels.addEventListener("click", filterHotels);
 
-async function filterTous() {
-  getWorks();
+function filterTous() {
   document.querySelector(".gallery").innerHTML = "";
+  generateWorks(allworks); 
 }
 
-async function filterObjets() {
+
+function filterObjets() {
   const galleryObjets = allworks.filter(function (work) {
     return work.category.name === "Objets";
   });
   document.querySelector(".gallery").innerHTML = "";
-   window.localStorage.setItem("allworks", JSON.stringify(galleryObjets));
   generateWorks(galleryObjets);
 }
 
-async function filterAppartement() {
+function filterAppartement() {
   const galleryAppartement = allworks.filter(function (work) {
     return work.category.name === "Appartements";
   });
   document.querySelector(".gallery").innerHTML = "";
-   window.localStorage.setItem("allworks", JSON.stringify(galleryAppartement));
-
   generateWorks(galleryAppartement);
 }
 
-async function filterHotels() {
+function filterHotels() {
   const galleryHotels = allworks.filter(function (work) {
     return work.category.name === "Hotels & restaurants";
   });
   document.querySelector(".gallery").innerHTML = "";
-   window.localStorage.setItem("allworks", JSON.stringify(galleryHotels));
   generateWorks(galleryHotels);
 }
-
-
-
