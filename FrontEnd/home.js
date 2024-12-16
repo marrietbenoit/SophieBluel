@@ -1,8 +1,7 @@
 //retrieve array "works" from API
 let allworks = window.localStorage.getItem("allworks");
-// console.log(allworks);
 
-if (allworks === null) {
+if (allworks === null || allworks.length === 0) {
   getWorks();
 } else {
   allworks = JSON.parse(allworks);
@@ -48,13 +47,12 @@ btnObjets.addEventListener("click", filterObjets);
 btnApartements.addEventListener("click", filterAppartement);
 btnHotels.addEventListener("click", filterHotels);
 
-function filterTous() {
+async function filterTous() {
   document.querySelector(".gallery").innerHTML = "";
   generateWorks(allworks); 
 }
 
-
-function filterObjets() {
+async function filterObjets() {
   const galleryObjets = allworks.filter(function (work) {
     return work.category.name === "Objets";
   });
@@ -62,7 +60,7 @@ function filterObjets() {
   generateWorks(galleryObjets);
 }
 
-function filterAppartement() {
+async function filterAppartement() {
   const galleryAppartement = allworks.filter(function (work) {
     return work.category.name === "Appartements";
   });
@@ -70,7 +68,7 @@ function filterAppartement() {
   generateWorks(galleryAppartement);
 }
 
-function filterHotels() {
+async function filterHotels() {
   const galleryHotels = allworks.filter(function (work) {
     return work.category.name === "Hotels & restaurants";
   });
