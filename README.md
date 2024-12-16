@@ -1,6 +1,5 @@
 # Portfolio-architecte-sophie-bluel
- https://marrietbenoit.github.io/SophieBluel
-/
+
 Code du projet 6 d'intégrateur web.
 
 ## Information pour le lancer le code
