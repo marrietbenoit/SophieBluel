@@ -35,43 +35,54 @@ function generateWorks(works) {
 }
 
 //for buttons
-//retrieve btns and add listener
-//empty gallery and replace with targegted elements
-const btnTous = document.getElementById("btn-tous");
-const btnObjets = document.getElementById("btn-objets");
-const btnApartements = document.getElementById("btn-appartements");
-const btnHotels = document.getElementById("btn-hotels-restaurants");
 
+async function getBtn() {
+  const btnReponse = await fetch("http://localhost:5678/api/categories");
+  const allBtn = await btnReponse.json();
+  window.localStorage.setItem("allbtn", JSON.stringify(allBtn));
+  generateBtns(allBtn);
+  console.log(allBtn);
+}
+getBtn();
+
+function generateBtns(btns) {
+  for (let i = 0; i < btns.length; i++) {
+    const btn = btns[i];
+    const currentBtn = document.createElement("button");
+    currentBtn.classList.add("filter-btns");
+    currentBtn.innerText = btn.name;
+    const filterSection = document.getElementsByClassName("filtres");
+    //console.log(filterSection[0]);
+    filterSection[0].appendChild(currentBtn);
+    currentBtn.addEventListener("click", function () {
+      console.log("toto");
+
+      const galleryAppartement = allworks.filter(function (work) {
+        return work.category.name === btn.name;
+      });
+      document.querySelector(".gallery").innerHTML = "";
+      generateWorks(galleryAppartement);
+    });
+  }
+}
+const btnTous = document.createElement("button");
+const filterSection = document.getElementsByClassName("filtres");
+filterSection[0].appendChild(btnTous);
 btnTous.addEventListener("click", filterTous);
-btnObjets.addEventListener("click", filterObjets);
-btnApartements.addEventListener("click", filterAppartement);
-btnHotels.addEventListener("click", filterHotels);
+btnTous.innerText = "Tous";
 
 async function filterTous() {
   document.querySelector(".gallery").innerHTML = "";
-  generateWorks(allworks); 
+  generateWorks(allworks);
 }
 
-async function filterObjets() {
-  const galleryObjets = allworks.filter(function (work) {
-    return work.category.name === "Objets";
-  });
-  document.querySelector(".gallery").innerHTML = "";
-  generateWorks(galleryObjets);
-}
+function filters(categoriesName) {
+  console.log("toto");
 
-async function filterAppartement() {
   const galleryAppartement = allworks.filter(function (work) {
-    return work.category.name === "Appartements";
+    return work.category.name === categoriesName;
   });
   document.querySelector(".gallery").innerHTML = "";
   generateWorks(galleryAppartement);
 }
 
-async function filterHotels() {
-  const galleryHotels = allworks.filter(function (work) {
-    return work.category.name === "Hotels & restaurants";
-  });
-  document.querySelector(".gallery").innerHTML = "";
-  generateWorks(galleryHotels);
-}

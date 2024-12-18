@@ -205,18 +205,21 @@ li:hover {
  display: flex;
  justify-content: center;
  margin-bottom: 2rem;
+ gap: 1rem;
 }
 #myBtn{
+  display: flex;
   border: none;
+  align-items: center;
+  gap: .5rem;
   background-color:transparent;
   color: black;
   margin: 0;
 }
-#pf_img {
-  height: 15px;
-margin-right:.5rem ;
-}
 
+#pf_img{
+  width: 25px;
+}
 .modal {
   display: none; 
  position: absolute;
@@ -234,25 +237,59 @@ margin-right:.5rem ;
   gap: .24rem;
   background-color: #fefefe;
   margin: 15% auto; 
-  padding: 20px;
+  padding: 10rem;
   overflow: auto; 
-  border: 1px solid #888;
-  width: 30%;
+  width: 35%;
+  border-radius: 25px;
 }
-.modal-content > p{
-  margin: auto;
-font-size: 25px;
+.modal-content > div{
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+ width: 100%;
+font-size: 50px;
+padding:2rem ;
+}
+.modal-content > div > span{
+position: absolute;
+right: 0rem;
 }
 .modal-img{
   width: 100px;
 }
+.modal-line{
+  border-bottom: 1px solid #b3b3b3;
+}
+.modal-btn{
+  font-family: "Syne";
+  font-weight: 700;
+  color: white;
+  background-color: #1d6154;
+  margin: 2em auto;
+  width: 20rem;
+  height: 3rem;
+  text-align: center;
+  border-radius: 60px;
+  border: none;
+}
+.fig{
+  position: relative;
+}
+.trash-div{
+  position: absolute;
+  top: 5%;
+  z-index: 1;
+  padding: 5%;
+  background-color: black;
+}
+.trashpic{
+  right:10px;
+  width: 24px;
+}
 .close {
-  display: flex;
-  justify-content: end;
-  width: 100%;
   color: #aaa;
-  float: right;
-  font-size: 28px;
+  font-size: 50px;
   font-weight: bold;
 }
 
