@@ -134,6 +134,22 @@ body {
   font-family: "Work Sans";
   font-size: 14px;
 }
+.hero {
+  background-color: black;
+  width: 120%;
+  margin: 0;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ justify-self: center;
+  font-size: 25px;
+}
+#hero-img {
+  height: 20px;
+  margin-right: 0.5rem;
+}
 header {
   display: flex;
   justify-content: space-between;
@@ -237,7 +253,7 @@ li:hover {
   gap: 0.24rem;
   background-color: #fefefe;
   margin: 15% auto;
-  padding: 10rem;
+  padding: 5rem;
   overflow: auto;
   width: 35%;
   border-radius: 25px;
@@ -254,6 +270,7 @@ li:hover {
 .modal-content > div > span {
   position: absolute;
   right: 0rem;
+  top: -2rem;
 }
 .modal-img {
   width: 100px;
@@ -288,14 +305,13 @@ li:hover {
   width: 24px;
 }
 .close {
-  color: #aaa;
+  color: black;
   font-size: 50px;
   font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-  color: black;
   text-decoration: none;
   cursor: pointer;
 }
@@ -314,17 +330,17 @@ li:hover {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap:2rem;
+  gap: 2rem;
   background-color: #fefefe;
   margin: 15% auto;
-  padding: 10rem;
+  padding: 5rem;
   overflow: auto;
   width: 35%;
   border-radius: 25px;
 }
-.previewBox{
+.headerBox {
   height: auto;
- width: auto;
+  width: auto;
   text-align: center;
 }
 .preview-img {
@@ -333,29 +349,31 @@ li:hover {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
- .addClose {
- position: absolute;
-right: 10px;
-top: 10px;
+.addClose {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 .addModal-content > form {
-display: flex;
-flex-direction: column;
-gap:1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
-.addModal-content > form > input, select{
+.addModal-content > form > input,
+select {
   height: 2rem;
   border: none;
   box-shadow: 10px 5px 5px #f4f4f4;
 }
-.addArrow{
+.addArrow {
   position: absolute;
- left: 10px;
+  left: 10px;
   top: 10px;
-  font-size:50px;
+  font-size: 50px;
+  cursor: pointer;
 }
-.addClose{
-  color:black;
+.addClose {
+  color: black;
   font-size: 50px;
   font-weight: bold;
 }
@@ -365,17 +383,17 @@ gap:1.5rem;
   text-decoration: none;
   cursor: pointer;
 }
-.addUploadWindow{
+.addUploadWindow {
   display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-padding: 2rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
   background-color: #e8f1f6;
   color: #306685;
 }
 .addWindowBtn {
-  background-color:#cbd6dc ;;
+  background-color: #cbd6dc;
   border: none;
   color: #306685;
   font-family: "Syne";
@@ -390,14 +408,14 @@ padding: 2rem;
 }
 .addWindowBtn.active {
   font-family: "Syne";
-font-weight: 700;
-background-color: #1d6154;
-color: white;
+  font-weight: 700;
+  background-color: #1d6154;
+  color: white;
   cursor: pointer;
 }
 
-.upload-btn{
-  background-color:#cbd6dc ;
+.upload-btn {
+  background-color: #cbd6dc;
   border: none;
   color: #306685;
   font-family: "Syne";
@@ -411,7 +429,7 @@ color: white;
 }
 .addModal-line {
   border-bottom: 1px solid #b3b3b3;
- margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .filtres {
@@ -472,7 +490,6 @@ color: white;
   border: none;
   box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-
 
 input[type="submit"],
 button {
