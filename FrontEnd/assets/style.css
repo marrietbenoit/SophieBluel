@@ -135,12 +135,12 @@ body {
   font-size: 14px;
 }
 .hero {
+  display: none;
   background-color: black;
   width: 120%;
   margin: 0;
   color: white;
   padding: 1rem;
-  display: flex;
   justify-content: center;
   align-items: center;
  justify-self: center;
@@ -224,7 +224,7 @@ li:hover {
   gap: 1rem;
 }
 #myBtn {
-  display: flex;
+  display: none;
   border: none;
   align-items: center;
   gap: 0.5rem;
