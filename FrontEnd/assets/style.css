@@ -134,10 +134,10 @@ body {
   font-family: "Work Sans";
   font-size: 14px;
 }
-.hero {
+#hero {
   display: none;
   background-color: black;
-  width: 120%;
+  width: 100dvw;
   margin: 0;
   color: white;
   padding: 1rem;
@@ -293,17 +293,18 @@ li:hover {
 .fig {
   position: relative;
 }
-.trash-div {
+.trash-box {
   position: absolute;
-  top: 5%;
+  height: 25px;
+  top: -10%;
   z-index: 1;
   padding: 5%;
   background-color: black;
-}
-.trashpic {
   right: 10px;
   width: 24px;
+  border-radius: 25%;
 }
+
 .close {
   color: black;
   font-size: 50px;
@@ -315,15 +316,34 @@ li:hover {
   text-decoration: none;
   cursor: pointer;
 }
-.addModal {
+.back {
+ position: absolute;
+ top: .25rem;
+ left:  .25rem;
+  color: black;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.back:hover,
+.back:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+#add {
   display: none;
   position: absolute;
   z-index: 1;
   left: 0;
   top: 0;
   right: 0;
-  background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
+  background-color: white;
+}
+.addTitre{
+  display: flex;
+  justify-self: center;
+  font-size: x-large;
 }
 
 .addModal-content {
@@ -422,10 +442,14 @@ select {
   font-weight: 700;
   margin: 2em auto;
   width: 50%;
-  height: 3rem;
-  text-align: center;
+  height: 2.5rem;
   border-radius: 60px;
   border: none;
+}
+.upload-btn > input{
+  opacity: 0;
+  width: 100%;
+  height: 2.5rem;
 }
 .addModal-line {
   border-bottom: 1px solid #b3b3b3;

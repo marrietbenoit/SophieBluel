@@ -10,22 +10,23 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
+	<link rel="stylesheet" href="./login.html">
 	<script src="./home.js" defer></script>
-	<script src="./homePageEdit.js" defer></script>
+	
 </head>
 
 <body>
-	<section class="hero" id="hero">
+	<header id="hero" class="hero" >
 		<p><img id="hero-img" src="./assets/icons/edit-white.svg" alt="">Mode édition</p>
-	</section>
+	</header>
 
-	<header>
+	<header id="header2">
 		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 		<nav>
 			<ul>
 				<li><a class="active" href="#home">projets</a></li>
 				<li><a class="active" href="#contact">contact</a></li>
-				<li><a class="active" href="./login.html">Login</a></li>
+				<li><a id="logBtn" class="active" href="./login.html">Login</a></li>
 				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 			</ul>
 		</nav>
@@ -54,13 +55,11 @@
 			<div class="gallery"></div>
 
 			<div id="myModal" class="modal">
-				<div class="modal-content"></div>
+				<div id="edit" class="modal-content"></div>
+				<div id="add" class="addModal-content"></div>
 			</div>
 
-			<div id="addModal" class="addModal">
-				<div class="addModal-content"></div>
-				<form id="addForm" action=""></form>
-			</div>
+			
 		</section>
 
 		<section id="contact">

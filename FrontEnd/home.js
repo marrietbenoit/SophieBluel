@@ -1,7 +1,6 @@
 // Retrieve "works" from API or localStorage
 let allworks = window.localStorage.getItem("allworks");
 
-
 if (!allworks) {
   getWorks();
 } else {
@@ -24,7 +23,8 @@ async function getWorks() {
 // Generate gallery works
 function generateWorks(works) {
   const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = ""; // Clear gallery content
+  gallery.innerHTML = "";
+
   works.forEach((work) => {
     const figure = document.createElement("figure");
 
@@ -96,7 +96,8 @@ function setActiveButton(activeButton) {
 
 // Modal functionality for managing works
 const modal = document.getElementById("myModal");
-const addModal = document.getElementById("addModal");
+const editModal = document.getElementById("edit");
+const addModal = document.getElementById("add");
 const btn = document.getElementById("myBtn");
 
 btn.onclick = () => {
@@ -154,8 +155,12 @@ function generateModalContent() {
   const modalBtn = document.createElement("button");
   modalBtn.classList.add("modal-btn");
   modalBtn.innerText = "Ajouter une photo";
-  modalBtn.onclick = openAddModal;
-
+  
+  modalBtn.onclick = () => {
+   editModal.style.display = "none";
+   addModal.style.display = "block";
+   setupAddModal();
+  };
   modalContent.appendChild(modalBtn);
 }
 
@@ -172,6 +177,8 @@ async function deleteWork(id, figureElement) {
       figureElement.remove();
       allworks = allworks.filter((work) => work.id !== id);
       window.localStorage.setItem("allworks", JSON.stringify(allworks));
+
+      generateModalContent();
     } else {
       console.error("Failed to delete work:", response.statusText);
     }
@@ -180,37 +187,80 @@ async function deleteWork(id, figureElement) {
   }
 }
 
-// Open add work modal
-function openAddModal() {
-  modal.style.display = "none";
-  addModal.style.display = "block";
-  setupAddModal();
-}
+
 
 // Setup add work modal
 function setupAddModal() {
   const addModalContent = document.querySelector(".addModal-content");
+
   addModalContent.innerHTML = "";
 
   const addModalHeader = document.createElement("div");
+
+  const back = document.createElement("span");
+  back.classList.add("back");
+  back.innerHTML = "&larr;";
+  back.onclick = () => {
+    addModal.style.display = "none";
+    editModal.style.display = "flex";
+    
+  };
+
   const close = document.createElement("span");
   close.classList.add("addClose");
   close.innerHTML = "&times;";
   close.onclick = () => (addModal.style.display = "none");
 
-  const headerText = document.createElement("p");
-  headerText.innerText = "Ajout photo";
-
-  addModalHeader.appendChild(headerText);
+  addModalHeader.appendChild(back);
   addModalHeader.appendChild(close);
   addModalContent.appendChild(addModalHeader);
 
-  const form = createAddWorkForm();
-  addModalContent.appendChild(form);
-}
+  const titre = document.createElement("p");
+  titre.classList.add("addTitre");
+  titre.innerHTML = "Ajout photo";
 
-// Create add work form
-function createAddWorkForm() {
+  const addModalWindow = document.createElement("div");
+  addModalWindow.classList.add("addUploadWindow");
+
+  const previewBox = document.createElement("div");
+  previewBox.classList.add("previewBox");
+
+  const previewBoxImage = document.createElement("img");
+  previewBoxImage.src = "./assets/icons/picture.png";
+  previewBoxImage.alt = "Preview Image";
+  previewBoxImage.classList.add("preview-img");
+
+  previewBox.appendChild(previewBoxImage);
+
+  const uploadBtn = document.createElement("button");
+  uploadBtn.classList.add("upload-btn");
+  uploadBtn.innerText = "+ Ajouter photo";
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.required = true;
+
+  fileInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewBox.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = file.name;
+        img.classList.add("preview-img");
+        previewBox.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  uploadBtn.appendChild(fileInput);
+  addModalWindow.appendChild(previewBox);
+  addModalWindow.appendChild(uploadBtn);
+
   const form = document.createElement("form");
   form.enctype = "multipart/form-data";
   form.method = "POST";
@@ -228,7 +278,7 @@ function createAddWorkForm() {
 
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
-  placeholderOption.innerText = "Sélectionner une catégorie";
+  placeholderOption.innerText = "Sélectionnez une catégorie";
   categorySelect.appendChild(placeholderOption);
 
   fetch("http://localhost:5678/api/categories")
@@ -242,14 +292,8 @@ function createAddWorkForm() {
       });
     });
 
-  const fileLabel = document.createElement("label");
-  fileLabel.innerText = "Ajouter photo :";
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/*";
-  fileInput.required = true;
-
   const submitButton = document.createElement("button");
+  submitButton.classList.add("addWindowBtn");
   submitButton.type = "submit";
   submitButton.innerText = "Valider";
 
@@ -257,11 +301,36 @@ function createAddWorkForm() {
   form.appendChild(titleInput);
   form.appendChild(categoryLabel);
   form.appendChild(categorySelect);
-  form.appendChild(fileLabel);
-  form.appendChild(fileInput);
   form.appendChild(submitButton);
 
-  form.addEventListener("submit", async (event) => {
+  addModalContent.appendChild(addModalHeader);
+  addModalContent.appendChild(titre);
+  addModalContent.appendChild(addModalWindow);
+  addModalContent.appendChild(form);
+
+  // Form Validation and submission
+  function validateForm() {
+    const titleFilled = titleInput.value.trim() !== "";
+    const fileChosen = fileInput.files.length > 0;
+    const categorySelected = categorySelect.value !== "";
+
+    if (titleFilled && fileChosen && categorySelected) {
+      submitButton.classList.add("active");
+      submitButton.disabled = false;
+    } else {
+      submitButton.classList.remove("active");
+      submitButton.disabled = true;
+    }
+  }
+
+  titleInput.addEventListener("input", validateForm);
+  fileInput.addEventListener("change", validateForm);
+  categorySelect.addEventListener("change", validateForm);
+
+  validateForm();
+
+  
+  submitButton.addEventListener("click", async (event) => {
     event.preventDefault();
     const formData = new FormData();
     formData.append("title", titleInput.value);
@@ -278,8 +347,10 @@ function createAddWorkForm() {
       if (response.ok) {
         allworks = null;
         window.localStorage.removeItem("allworks");
-        getWorks();
+        await getWorks();
         addModal.style.display = "none";
+        editModal.style.display = "flex";
+        generateModalContent();
       } else {
         alert("Failed to add work.");
       }
@@ -287,11 +358,38 @@ function createAddWorkForm() {
       console.error("Error adding work:", error);
     }
   });
-
-  return form;
 }
+const token = localStorage.getItem("token");
+const heroBtn = document.querySelector("#hero");
+const editBtn = document.querySelector("#myBtn");
+const logBtn = document.getElementById("logBtn");
+
+
+if (token != null) {
+  heroBtn.style.display = "flex";
+  editBtn.style.display = "flex";
+  logBtn.innerText = "Log out";
+}
+
+
+function logout() {
+  
+  localStorage.removeItem("token");
+
+ 
+  heroBtn.style.display = "none";
+  editBtn.style.display = "none";
+  logBtn.innerText = "Log in";
+
+  
+  window.location.href = "index.html";
+}
+
+
+logBtn.addEventListener("click", logout);
+
+// Close modals when clicking outside
 
 window.onclick = (event) => {
   if (event.target === modal) modal.style.display = "none";
-  if (event.target === addModal) addModal.style.display = "none";
 };
