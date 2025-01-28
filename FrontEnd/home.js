@@ -76,7 +76,7 @@ function generateCategoryButtons(categories) {
     btn.addEventListener("click", () => {
       setActiveButton(btn);
       const filteredWorks = allworks.filter(
-        (work) => work.category.name === category.name
+        (work) => work.category?.name === category.name
       );
       generateWorks(filteredWorks);
     });
@@ -94,46 +94,45 @@ function setActiveButton(activeButton) {
   activeButton.style.color = "#ffffff";
 }
 
-// Modal functionality for managing works
+// Reference to the modal dialog and other elements
 const modalContainer = document.getElementById("modal-container");
 const btn = document.getElementById("myBtn");
-const modalBtns = document.createElement("div");
-modalBtns.classList.add("close-back");
-modalContainer.appendChild(modalBtns);
+const modalContent = modalContainer.querySelector(".modal-content");
+const modalBtns = modalContainer.querySelector(".close-back");
+const closeDialogBtn = modalBtns.querySelector(".close");
+const modalBtn = modalContent.querySelector(".modal-btn");
+const worksGallery = modalContent.querySelectorAll(".fig"); // Static placeholder; updated dynamically
+const modalLine = modalContent.querySelector(".modal-line");
 
+// State for temporary works
+let tempWorks = [...allworks];
+
+// Open the modal on button click
 btn.addEventListener("click", () => {
-  modalContainer.style.display = "flex";
+  modalContainer.showModal();
   generateModalContent();
 });
 
+// Close the modal and update API on close
+closeDialogBtn.addEventListener("click", () => {
+  modalContainer.close();
+  closeAndUpdate();
+});
+
+// Function to populate the modal content dynamically
 function generateModalContent() {
-  modalContainer.innerText = "";
+  // Clear previous works (skip static elements like title, line, and button)
+  const figures = modalContent.querySelectorAll(".fig");
+  figures.forEach((figure) => figure.remove());
 
-  modalBtns.classList.add("close-back");
-  modalContainer.appendChild(modalBtns);
-
-  //Dialog closing button
-  const closeDialogBtn = document.createElement("span");
-  closeDialogBtn.classList.add("close");
-  closeDialogBtn.innerHTML = "&times;";
-  modalBtns.appendChild(closeDialogBtn);
-
-  const modal = document.createElement("div");
-  modal.classList.add("modal-content");
-  modalContainer.appendChild(modal);
-
-  const modalContainerTitle = document.createElement("div");
-  modalContainerTitle.classList.add("modal-container-title");
-  modal.appendChild(modalContainerTitle);
-
-  const headersTitle = document.createElement("h4");
-  headersTitle.innerHTML = "Galerie photo";
-  modalContainerTitle.appendChild(headersTitle);
-
-  // Display each work in the modal
-  allworks.forEach((work) => {
+  // Populate with dynamic works
+  tempWorks.forEach((work) => {
     const figure = document.createElement("figure");
     figure.classList.add("fig");
+
+    const imageElement = document.createElement("img");
+    imageElement.src = work.imageUrl;
+    imageElement.classList.add("modal-img");
 
     const trashBox = document.createElement("button");
     trashBox.type = "button";
@@ -144,147 +143,95 @@ function generateModalContent() {
     trashIcon.alt = "Delete";
     trashBox.appendChild(trashIcon);
 
+    // Add delete functionality
     trashBox.addEventListener("click", (event) => {
       event.preventDefault();
-      deleteWork(work.id, figure, event);
+      deleteWork(work.id, figure);
     });
-
-    let tempWorks = [...allworks];
-
-    // Delete work locally and update modal view
-    function deleteWork(id, figureElement, event) {
-      try {
-        event.preventDefault();
-
-        // Remove from local storage
-        tempWorks = tempWorks.filter((work) => work.id !== id);
-
-        // Update the modal view
-        figureElement.remove();
-        window.localStorage.setItem("tempWorks", JSON.stringify(tempWorks)); // Save the updated tempWorks in localStorage
-      } catch (error) {
-        console.error("Error deleting work locally:", error);
-      }
-    }
-
-    closeDialogBtn.addEventListener("click", () => {
-      modalContainer.style.display = "none";
-      closeDialogBtn.innerText = "";
-      closeAndUpdate();
-    });
-    // Update the API when the modal is closed
-    async function closeAndUpdate() {
-      try {
-        const token = localStorage.getItem("token");
-
-        // Find deleted works by comparing tempWorks with allworks
-        const deletedWorks = allworks.filter(
-          (work) => !tempWorks.some((tempWork) => tempWork.id === work.id)
-        );
-        // Update API for deleted works
-        for (const work of deletedWorks) {
-          const response = await fetch(
-            `http://localhost:5678/api/works/${work.id}`,
-            {
-              method: "DELETE",
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          if (!response.ok) {
-            console.error(
-              `Failed to delete work with ID ${work.id}:`,
-              response.statusText
-            );
-          }
-        }
-
-        // Sync global state with tempWorks after API updates
-        allworks = [...tempWorks];
-        window.localStorage.setItem("allworks", JSON.stringify(allworks));
-      } catch (error) {
-        console.error("Error updating API on modal close:", error);
-      }
-    }
-
-    const imageElement = document.createElement("img");
-    imageElement.src = work.imageUrl;
-    imageElement.classList.add("modal-img");
 
     figure.appendChild(imageElement);
     figure.appendChild(trashBox);
-    modal.appendChild(figure);
+    modalContent.insertBefore(figure, modalLine); // Insert before the line divider
   });
+}
 
-  // Add modal line and button to add a new photo
-  const line = document.createElement("div");
-  line.classList.add("modal-line");
-  modal.appendChild(line);
+// Function to delete a work locally
+function deleteWork(id, figureElement) {
+  try {
+    // Remove from temporary state
+    tempWorks = tempWorks.filter((work) => work.id !== id);
 
-  const modalBtn = document.createElement("button");
-  modalBtn.classList.add("modal-btn");
-  modalBtn.innerText = "Ajouter une photo";
+    // Remove the work from the modal view
+    figureElement.remove();
 
-  modalBtn.onclick = () => {
-    modal.style.display = "none";
-    setupAddModal();
-  };
-  modal.appendChild(modalBtn);
+    // Update localStorage with tempWorks
+    window.localStorage.setItem("tempWorks", JSON.stringify(tempWorks));
+  } catch (error) {
+    console.error("Error deleting work locally:", error);
+  }
+}
+
+// Function to close the modal and update the API
+async function closeAndUpdate() {
+  try {
+    const token = localStorage.getItem("token");
+
+    // Find deleted works by comparing tempWorks with allworks
+    const deletedWorks = allworks.filter(
+      (work) => !tempWorks.some((tempWork) => tempWork.id === work.id)
+    );
+
+    // Delete each work from the server
+    for (const work of deletedWorks) {
+      const response = await fetch(`http://localhost:5678/api/works/${work.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        console.error(`Failed to delete work with ID ${work.id}:`, response.statusText);
+      }
+    }
+
+    // Sync global state with tempWorks after API updates
+    allworks = [...tempWorks];
+    window.localStorage.setItem("allworks", JSON.stringify(allworks));
+  } catch (error) {
+    console.error("Error updating API on modal close:", error);
+  }
+}
+
+// Add functionality to the "Ajouter une photo" button
+modalBtn.addEventListener("click", () => {
+  modalContent.style.display = "none";
+  setupAddModal();
+});
 
   // // Setup add work modal
   function setupAddModal() {
-    const addModal = document.createElement("div");
-    addModal.classList.add("addModal-content");
-    modalContainer.appendChild(addModal);
-
-    const addModalContainerTitle = document.createElement("div");
-    addModalContainerTitle.classList.add("addModal-container-title");
-    addModal.appendChild(modalContainerTitle);
-
-    const addModalheadersTitle = document.createElement("h4");
-    addModalheadersTitle.innerHTML = "Ajout photo";
-    addModalContainerTitle.appendChild(addModalheadersTitle);
-
-    const back = document.createElement("span");
-    back.classList.add("back");
-    back.innerHTML = "&larr;";
-    modalContainer.appendChild(back);
-
-    back.onclick = () => {
-      addModal.style.display = "none";
-      modal.style.display = "flex";
-      back.style.display = "none";
-    };
-
-    const addModalWindow = document.createElement("div");
-    addModalWindow.classList.add("addUploadWindow");
-    addModal.appendChild(addModalWindow);
-
-    const previewBox = document.createElement("div");
-    previewBox.classList.add("previewBox");
-
-    const previewBoxImage = document.createElement("img");
-    previewBoxImage.src = "./assets/icons/picture.png";
-    previewBoxImage.alt = "Preview Image";
-    previewBoxImage.classList.add("preview-img");
-
-    previewBox.appendChild(previewBoxImage);
-
-    const uploadBtn = document.createElement("button");
-    uploadBtn.classList.add("upload-btn");
-    uploadBtn.innerText = "+ Ajouter photo";
-
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.required = true;
-
+    const addModal = document.getElementById("addModal");
+    const back = addModal.querySelector(".back");
+    const previewBox = addModal.querySelector(".previewBox");
+    const previewBoxImage = previewBox.querySelector(".preview-img");
+    const uploadBtn = addModal.querySelector(".upload-btn");
+    const fileInput = uploadBtn.querySelector("input[type='file']");
+    const form = addModal.querySelector("form");
+    const titleInput = form.querySelector("#title");
+    const categorySelect = form.querySelector("#category");
+    const submitButton = form.querySelector(".addWindowBtn");
+  
+    
+    back.addEventListener("click", () => {
+      addModal.close();
+      modal.sho(); 
+    });
+  
+    // Handle file input change
     fileInput.addEventListener("change", (event) => {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          previewBox.innerHTML = "";
+          previewBox.innerHTML = ""; 
           const img = document.createElement("img");
           img.src = e.target.result;
           img.alt = file.name;
@@ -294,31 +241,8 @@ function generateModalContent() {
         reader.readAsDataURL(file);
       }
     });
-
-    uploadBtn.appendChild(fileInput);
-    addModalWindow.appendChild(previewBox);
-    addModalWindow.appendChild(uploadBtn);
-
-    const form = document.createElement("form");
-    form.enctype = "multipart/form-data";
-    form.method = "POST";
-
-    const titleLabel = document.createElement("label");
-    titleLabel.innerText = "Titre :";
-    const titleInput = document.createElement("input");
-    titleInput.type = "text";
-    titleInput.required = true;
-
-    const categoryLabel = document.createElement("label");
-    categoryLabel.innerText = "Catégorie :";
-    const categorySelect = document.createElement("select");
-    categorySelect.required = true;
-
-    const placeholderOption = document.createElement("option");
-    placeholderOption.value = "";
-    placeholderOption.innerText = "";
-    categorySelect.appendChild(placeholderOption);
-
+  
+    // Fetch and populate categories
     fetch("http://localhost:5678/api/categories")
       .then((res) => res.json())
       .then((categories) => {
@@ -329,26 +253,13 @@ function generateModalContent() {
           categorySelect.appendChild(option);
         });
       });
-
-    const submitButton = document.createElement("button");
-    submitButton.classList.add("addWindowBtn");
-    submitButton.type = "submit";
-    submitButton.innerText = "Valider";
-
-    form.appendChild(titleLabel);
-    form.appendChild(titleInput);
-    form.appendChild(categoryLabel);
-    form.appendChild(categorySelect);
-    form.appendChild(submitButton);
-
-    addModal.appendChild(form);
-
-    // Form Validation and submission
+  
+    // Form validation
     function validateForm() {
       const titleFilled = titleInput.value.trim() !== "";
       const fileChosen = fileInput.files.length > 0;
       const categorySelected = categorySelect.value !== "";
-
+  
       if (titleFilled && fileChosen && categorySelected) {
         submitButton.classList.add("active");
         submitButton.disabled = false;
@@ -357,20 +268,20 @@ function generateModalContent() {
         submitButton.disabled = true;
       }
     }
-
+  
     titleInput.addEventListener("input", validateForm);
     fileInput.addEventListener("change", validateForm);
     categorySelect.addEventListener("change", validateForm);
-
-    validateForm();
-
+    validateForm(); // Initialize form validation
+  
+    // Handle form submission
     submitButton.addEventListener("click", async (event) => {
       event.preventDefault();
       const formData = new FormData();
       formData.append("title", titleInput.value);
       formData.append("image", fileInput.files[0]);
       formData.append("category", categorySelect.value);
-
+  
       const token = localStorage.getItem("token");
       try {
         const response = await fetch("http://localhost:5678/api/works", {
@@ -378,56 +289,42 @@ function generateModalContent() {
           headers: { Authorization: `Bearer ${token}` },
           body: formData,
         });
-
-        // Get the newly created work from the response
-        // Add the new work to the global `allworks` array
-        // Update localStorage with the new state of `allworks`
-        // Add the new work dynamically to the modal
-        // Attach delete functionality to the new work
-
+  
         if (response.ok) {
           const newWork = await response.json();
-
-          allworks.push(newWork);
-
-          window.localStorage.setItem("allworks", JSON.stringify(allworks));
-
+          allworks.push(newWork); // Add new work to the global array
+          window.localStorage.setItem("allworks", JSON.stringify(allworks)); // Update local storage
+  
+          // Dynamically add the new work to the modal
           const figure = document.createElement("figure");
           figure.classList.add("fig");
-
+  
           const imageElement = document.createElement("img");
           imageElement.src = newWork.imageUrl;
           imageElement.classList.add("modal-img");
-
+  
           const trashBox = document.createElement("button");
           trashBox.type = "button";
           trashBox.classList.add("trash-box");
-
+  
           const trashIcon = document.createElement("img");
           trashIcon.src = "./assets/icons/trash.svg";
           trashIcon.alt = "Delete";
           trashBox.appendChild(trashIcon);
-
+  
           trashBox.addEventListener("click", (event) => {
             event.preventDefault();
             deleteWork(newWork.id, figure, event);
           });
-
+  
           figure.appendChild(imageElement);
           figure.appendChild(trashBox);
-
+  
           const modal = document.querySelector(".modal-content");
-
           modal.appendChild(figure);
-          modalContainer.style.display = "flex";
+          modal.style.display = "flex";
+  
           generateModalContent();
-
-          titleInput.value = "";
-          fileInput.value = "";
-          categorySelect.value = "";
-          
-          modalContainer.style.display = "flex";
-
         } else {
           alert("Failed to add work.");
         }
@@ -436,7 +333,8 @@ function generateModalContent() {
       }
     });
   }
-}
+  
+
 
 const token = localStorage.getItem("token");
 const heroBtn = document.querySelector("#hero");
@@ -461,6 +359,9 @@ function logout() {
 
 logBtn.addEventListener("click", logout);
 
-window.onclick = (event) => {
-  if (event.target === modalContainer) modalContainer.style.display = "none";
+window.onclick = async (event) => {
+  if (event.target === modalContainer) {
+    modalContainer.close;
+    await closeAndUpdate(); 
+  }
 };

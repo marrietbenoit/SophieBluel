@@ -18,7 +18,7 @@
 
 <body>
 	<header id="hero" class="hero">
-		<p><img id="hero-img" src="./assets/icons/edit-white.svg" alt="">Mode édition</p>
+		<p><img id="hero-img" class="hidden" src="./assets/icons/edit-white.svg" alt="">Mode édition</p>
 	</header>
 
 	<header id="header2">
@@ -59,10 +59,7 @@
 			<div class="filtres"></div>
 			<div class="gallery"></div>
 
-			<dialog id="modal-container" class="modal">
-
-
-			</dialog>
+			
 
 
 		</section>
@@ -89,6 +86,68 @@
 			</ul>
 		</nav>
 	</footer>
+
+
+	<dialog id="modal-container" class="modal-container">
+		<!-- Close and Back Button Container -->
+		<div class="close-back">
+		  <!-- Close Button -->
+		  <span class="close">&times;</span>
+		</div>
+	  
+		<!-- Modal Content -->
+		<div class="modal-content">
+		  <!-- Modal Title -->
+		  <div class="modal-container-title">
+			<h4>Galerie photo</h4>
+		  </div>
+	  
+		  <!-- Works Gallery -->
+		  <figure class="fig">
+			<img src="./assets/icons/picture.png" alt="Example Image" class="modal-img" />
+			<button type="button" class="trash-box">
+			  <img src="./assets/icons/trash.svg" alt="Delete" />
+			</button>
+		  </figure>
+	  
+		  <!-- Add a dividing line -->
+		  <div class="modal-line"></div>
+	  
+		  <!-- Button to add a new photo -->
+		  <button class="modal-btn">Ajouter une photo</button>
+		</div>
+	  </dialog>
+	  
+
+	  <dialog id="addModal" class="add-modal-container">
+    <div class="addModal-content">
+      <div class="addModal-container-title">
+        <h4>Ajout photo</h4>
+      </div>
+      <span class="back">&larr;</span>
+      <div class="addUploadWindow">
+        <div class="previewBox">
+          <img src="./assets/icons/picture.png" alt="Preview Image" class="preview-img">
+        </div>
+        <button class="upload-btn">
+          + Ajouter photo
+          <input type="file" accept="image/*" required>
+        </button>
+      </div>
+      <form enctype="multipart/form-data" method="POST">
+        <label for="title">Titre :</label>
+        <input type="text" id="title" name="title" required>
+        <label for="category">Catégorie :</label>
+        <select id="category" name="category" required>
+          <option value=""></option>
+          <!-- Categories will be dynamically added here -->
+        </select>
+        <button type="submit" class="addWindowBtn">Valider</button>
+      </form>
+    </div>
+  </dialog>
+
+	
 </body>
 
 </html>

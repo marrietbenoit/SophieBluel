@@ -135,7 +135,7 @@ body {
   font-size: 14px;
 }
 #hero {
-  display: none;
+  display:none;
   background-color: black;
   width: 100dvw;
   margin: 0;
@@ -236,34 +236,23 @@ li:hover {
 #pf_img {
   width: 25px;
 }
-.modal {
-  display: none;
-  flex-direction: row-reverse;
-  z-index: 1;
-  left: 0;
-  top: 20dvh;
-  width: 75%;
-  right: 0;
+
+.modal-container{
+  width: 50%;
+  border-radius: 25px;
   border: none;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.4);
 }
-.close-back {
-  display: flex;
-  justify-content: space-between;
+dialog::backdrop{
+   background-color: rgba(0, 0, 0, 0.4);
 }
+
 .modal-content {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.24rem;
-  background-color: #fefefe;
-  margin: auto;
-  width: 50%;
-  padding: 5rem;
-  overflow: auto;
-
-  border-radius: 25px;
-  scrollbar-width: none;
+ 
+  
 }
 .modal-content > div {
   position: relative;
@@ -274,11 +263,7 @@ li:hover {
   font-size: 50px;
   padding: 2rem;
 }
-.modal-content > div > span {
-  position: absolute;
-  right: 0rem;
-  top: -2rem;
-}
+
 .modal-img {
   width: 100px;
 }
@@ -313,13 +298,14 @@ li:hover {
 }
 
 .close {
+  display: flex;
+  justify-self: flex-end;
   color: black;
   font-size: 50px;
   font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.close:hover {
   text-decoration: none;
   cursor: pointer;
 }
