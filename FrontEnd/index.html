@@ -17,7 +17,7 @@
 </head>
 
 <body>
-	<header id="hero" class="hero">
+	<header id="hero" class="hero"  class="active">
 		<p><img id="hero-img" class="hidden" src="./assets/icons/edit-white.svg" alt="">Mode édition</p>
 	</header>
 
@@ -59,7 +59,7 @@
 			<div class="filtres"></div>
 			<div class="gallery"></div>
 
-			
+
 
 
 		</section>
@@ -69,9 +69,9 @@
 			<p>Vous avez un projet ? Discutons-en !</p>
 			<form action="#" method="post">
 				<label for="name">Nom</label>
-				<input type="text" name="name" id="name">
+				<input type="text" name="name" id="name" autocomplete="off">
 				<label for="email">Email</label>
-				<input type="email" name="email" id="email">
+				<input type="email" name="email" id="email" autocomplete="off">
 				<label for="message">Message</label>
 				<textarea name="message" id="message" cols="30" rows="10"></textarea>
 				<input type="submit" value="Envoyer">
@@ -89,65 +89,66 @@
 
 
 	<dialog id="modal-container" class="modal-container">
-		<!-- Close and Back Button Container -->
 		<div class="close-back">
-		  <!-- Close Button -->
-		  <span class="close">&times;</span>
+			<!-- Close Button -->
+			<span class="close">&times;</span>
 		</div>
-	  
-		<!-- Modal Content -->
 		<div class="modal-content">
-		  <!-- Modal Title -->
-		  <div class="modal-container-title">
-			<h4>Galerie photo</h4>
-		  </div>
-	  
-		  <!-- Works Gallery -->
-		  <figure class="fig">
-			<img src="./assets/icons/picture.png" alt="Example Image" class="modal-img" />
-			<button type="button" class="trash-box">
-			  <img src="./assets/icons/trash.svg" alt="Delete" />
-			</button>
-		  </figure>
-	  
-		  <!-- Add a dividing line -->
-		  <div class="modal-line"></div>
-	  
-		  <!-- Button to add a new photo -->
-		  <button class="modal-btn">Ajouter une photo</button>
+			<!-- Modal Title -->
+			<div class="modal-container-title">
+				<h4>Galerie photo</h4>
+			</div>
+
+			<!-- Works Gallery -->
+			<figure class="fig">
+				<img src="./assets/icons/picture.png" alt="Example Image" class="modal-img" />
+				<button type="button" class="trash-box">
+					<img src="./assets/icons/trash.svg" alt="Delete" />
+				</button>
+			</figure>
+
+			<!-- Add a dividing line -->
+			<div class="modal-line"></div>
+
+			<!-- Button to add a new photo -->
+			<button class="modal-btn">Ajouter une photo</button>
 		</div>
-	  </dialog>
-	  
+	</dialog>
 
-	  <dialog id="addModal" class="add-modal-container">
-    <div class="addModal-content">
-      <div class="addModal-container-title">
-        <h4>Ajout photo</h4>
-      </div>
-      <span class="back">&larr;</span>
-      <div class="addUploadWindow">
-        <div class="previewBox">
-          <img src="./assets/icons/picture.png" alt="Preview Image" class="preview-img">
-        </div>
-        <button class="upload-btn">
-          + Ajouter photo
-          <input type="file" accept="image/*" required>
-        </button>
-      </div>
-      <form enctype="multipart/form-data" method="POST">
-        <label for="title">Titre :</label>
-        <input type="text" id="title" name="title" required>
-        <label for="category">Catégorie :</label>
-        <select id="category" name="category" required>
-          <option value=""></option>
-          <!-- Categories will be dynamically added here -->
-        </select>
-        <button type="submit" class="addWindowBtn">Valider</button>
-      </form>
-    </div>
-  </dialog>
 
-	
+	<dialog id="addModal" class="add-modal-container">
+		<div class="close-back">
+			<span class="back">&larr;</span>
+			<span class="add-close">&times;</span>
+		</div>
+		<div class="addModal-content">
+			<div class="addModal-container-title">
+				<h4>Ajout photo</h4>
+			</div>
+
+			<div class="addUploadWindow">
+				<div class="previewBox">
+					<img src="./assets/icons/picture.png" alt="Preview Image" class="preview-img">
+				</div>
+				<button class="upload-btn">
+					+ Ajouter photo
+					<input type="file" accept="image/*" required>
+				</button>
+			</div>
+			<form enctype="multipart/form-data" method="POST" >
+				<label for="title">Titre :</label>
+				<input type="text" id="title" name="title"  required>
+				<label for="category">Catégorie :</label>
+				<select id="category" name="category" required>
+					<option value=""></option>
+					
+				</select>
+				<button type="submit"  class="addWindowBtn">Valider</button>
+			</form>
+		</div>
+	</dialog>
+
+
 </body>
 
 </html>

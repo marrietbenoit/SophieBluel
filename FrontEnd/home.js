@@ -1,11 +1,10 @@
 // Retrieve "works" from API or localStorage
-let allworks = window.localStorage.getItem("allworks");
+let allworks = JSON.parse(window.localStorage.getItem("allworks"));
 
 if (!allworks) {
-  getWorks();
+  getWorks(); // Fetch from API if not in localStorage
 } else {
-  allworks = JSON.parse(allworks);
-  generateWorks(allworks);
+  generateWorks(allworks); // Use works from localStorage if available
 }
 
 // Fetch "works" from API and store in localStorage
@@ -13,7 +12,8 @@ async function getWorks() {
   try {
     const response = await fetch("http://localhost:5678/api/works");
     const works = await response.json();
-    window.localStorage.setItem("allworks", JSON.stringify(works));
+    window.localStorage.setItem("allworks", JSON.stringify(works)); // Store in localStorage
+    allworks = works; // Update global allworks
     generateWorks(works);
   } catch (error) {
     console.error("Error fetching works:", error);
@@ -45,7 +45,7 @@ async function getCategories() {
   try {
     const response = await fetch("http://localhost:5678/api/categories");
     const categories = await response.json();
-    window.localStorage.setItem("allbtn", JSON.stringify(categories));
+    window.localStorage.setItem("allbtn", JSON.stringify(categories)); // Store categories in localStorage
     generateCategoryButtons(categories);
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -64,7 +64,7 @@ function generateCategoryButtons(categories) {
   btnTous.innerText = "Tous";
   btnTous.addEventListener("click", () => {
     setActiveButton(btnTous);
-    generateWorks(allworks);
+    generateWorks(allworks); // Show all works
   });
   filterSection.appendChild(btnTous);
 
@@ -76,7 +76,7 @@ function generateCategoryButtons(categories) {
     btn.addEventListener("click", () => {
       setActiveButton(btn);
       const filteredWorks = allworks.filter(
-        (work) => work.category?.name === category.name
+        (work) => work.category?.name === category.name // Ensure that category exists and matches
       );
       generateWorks(filteredWorks);
     });
@@ -112,11 +112,18 @@ btn.addEventListener("click", () => {
   modalContainer.showModal();
   generateModalContent();
 });
+console.log( window.localStorage.getItem("openFirstModal") == "true");
+
+if ( window.localStorage.getItem("openFirstModal") !== null){
+  modalContainer.showModal();
+  generateModalContent();
+};
 
 // Close the modal and update API on close
 closeDialogBtn.addEventListener("click", () => {
   modalContainer.close();
   closeAndUpdate();
+  generateWorks(allworks);
 });
 
 // Function to populate the modal content dynamically
@@ -173,6 +180,7 @@ function deleteWork(id, figureElement) {
 
 // Function to close the modal and update the API
 async function closeAndUpdate() {
+   window.localStorage.removeItem("openFirstModal")  ;
   try {
     const token = localStorage.getItem("token");
 
@@ -183,12 +191,18 @@ async function closeAndUpdate() {
 
     // Delete each work from the server
     for (const work of deletedWorks) {
-      const response = await fetch(`http://localhost:5678/api/works/${work.id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `http://localhost:5678/api/works/${work.id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!response.ok) {
-        console.error(`Failed to delete work with ID ${work.id}:`, response.statusText);
+        console.error(
+          `Failed to delete work with ID ${work.id}:`,
+          response.statusText
+        );
       }
     }
 
@@ -202,139 +216,157 @@ async function closeAndUpdate() {
 
 // Add functionality to the "Ajouter une photo" button
 modalBtn.addEventListener("click", () => {
-  modalContent.style.display = "none";
+  modalContainer.close();
+  addModal.showModal();
   setupAddModal();
 });
 
-  // // Setup add work modal
-  function setupAddModal() {
-    const addModal = document.getElementById("addModal");
-    const back = addModal.querySelector(".back");
-    const previewBox = addModal.querySelector(".previewBox");
-    const previewBoxImage = previewBox.querySelector(".preview-img");
-    const uploadBtn = addModal.querySelector(".upload-btn");
-    const fileInput = uploadBtn.querySelector("input[type='file']");
-    const form = addModal.querySelector("form");
-    const titleInput = form.querySelector("#title");
-    const categorySelect = form.querySelector("#category");
-    const submitButton = form.querySelector(".addWindowBtn");
-  
-    
-    back.addEventListener("click", () => {
-      addModal.close();
-      modal.sho(); 
-    });
-  
-    // Handle file input change
-    fileInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          previewBox.innerHTML = ""; 
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          img.alt = file.name;
-          img.classList.add("preview-img");
-          previewBox.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  
-    // Fetch and populate categories
-    fetch("http://localhost:5678/api/categories")
-      .then((res) => res.json())
-      .then((categories) => {
-        categories.forEach((category) => {
-          const option = document.createElement("option");
-          option.value = category.id;
-          option.innerText = category.name;
-          categorySelect.appendChild(option);
-        });
-      });
-  
-    // Form validation
-    function validateForm() {
-      const titleFilled = titleInput.value.trim() !== "";
-      const fileChosen = fileInput.files.length > 0;
-      const categorySelected = categorySelect.value !== "";
-  
-      if (titleFilled && fileChosen && categorySelected) {
-        submitButton.classList.add("active");
-        submitButton.disabled = false;
-      } else {
-        submitButton.classList.remove("active");
-        submitButton.disabled = true;
-      }
-    }
-  
-    titleInput.addEventListener("input", validateForm);
-    fileInput.addEventListener("change", validateForm);
-    categorySelect.addEventListener("change", validateForm);
-    validateForm(); // Initialize form validation
-  
-    // Handle form submission
-    submitButton.addEventListener("click", async (event) => {
-      event.preventDefault();
-      const formData = new FormData();
-      formData.append("title", titleInput.value);
-      formData.append("image", fileInput.files[0]);
-      formData.append("category", categorySelect.value);
-  
-      const token = localStorage.getItem("token");
-      try {
-        const response = await fetch("http://localhost:5678/api/works", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        });
-  
-        if (response.ok) {
-          const newWork = await response.json();
-          allworks.push(newWork); // Add new work to the global array
-          window.localStorage.setItem("allworks", JSON.stringify(allworks)); // Update local storage
-  
-          // Dynamically add the new work to the modal
-          const figure = document.createElement("figure");
-          figure.classList.add("fig");
-  
-          const imageElement = document.createElement("img");
-          imageElement.src = newWork.imageUrl;
-          imageElement.classList.add("modal-img");
-  
-          const trashBox = document.createElement("button");
-          trashBox.type = "button";
-          trashBox.classList.add("trash-box");
-  
-          const trashIcon = document.createElement("img");
-          trashIcon.src = "./assets/icons/trash.svg";
-          trashIcon.alt = "Delete";
-          trashBox.appendChild(trashIcon);
-  
-          trashBox.addEventListener("click", (event) => {
-            event.preventDefault();
-            deleteWork(newWork.id, figure, event);
-          });
-  
-          figure.appendChild(imageElement);
-          figure.appendChild(trashBox);
-  
-          const modal = document.querySelector(".modal-content");
-          modal.appendChild(figure);
-          modal.style.display = "flex";
-  
-          generateModalContent();
-        } else {
-          alert("Failed to add work.");
-        }
-      } catch (error) {
-        console.error("Error adding work:", error);
-      }
-    });
-  }
-  
+// // Setup add work modal
+// Assuming that the form already has the necessary structure
 
+function setupAddModal() {
+  const addModal = document.getElementById("addModal");
+  const back = addModal.querySelector(".back");
+  const closeAddDialogBtn = addModal.querySelector(".add-close");
+  const previewBox = addModal.querySelector(".previewBox");
+  const fileInput = addModal.querySelector("input[type='file']");
+  const form = addModal.querySelector("form");
+  const titleInput = form.querySelector("#title");
+  const categorySelect = form.querySelector("#category");
+  const submitButton = form.querySelector(".addWindowBtn");
+
+  // Close the modal
+  closeAddDialogBtn.addEventListener("click", () => {
+    addModal.close();
+  });
+
+  // Back to previous modal
+  back.addEventListener("click", () => {
+    addModal.close();
+    const modalContainer = document.getElementById("modal-container");
+    if (modalContainer) modalContainer.showModal();
+  });
+
+  // File input event for preview image
+  fileInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewBox.innerHTML = ""; // Clear previous preview
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = "Preview";
+        img.classList.add("preview-img");
+        previewBox.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Fetch categories to populate the select dropdown
+  fetch("http://localhost:5678/api/categories")
+    .then((res) => res.json())
+    .then((categories) => {
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.innerText = category.name;
+        categorySelect.appendChild(option);
+      });
+    });
+
+  // Form validation logic
+  function validateForm() {
+    const titleFilled = titleInput.value.trim() !== "";
+    const fileChosen = fileInput.files.length > 0;
+    const categorySelected = categorySelect.value !== ""; // Ensure category is selected
+
+    // Enable or disable the submit button based on validation
+    if (titleFilled && fileChosen && categorySelected) {
+      submitButton.classList.add("active");
+      submitButton.disabled = false;
+    } else {
+      submitButton.classList.remove("active");
+      submitButton.disabled = true;
+    }
+  }
+
+  // Validate form when inputs change
+  titleInput.addEventListener("input", validateForm);
+  fileInput.addEventListener("change", validateForm);
+  categorySelect.addEventListener("change", validateForm);
+  validateForm();
+
+  // Handle form submission
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", titleInput.value);
+    formData.append("image", fileInput.files[0]);
+    formData.append("category", categorySelect.value); // Ensure category is sent
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("http://localhost:5678/api/works", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        
+        const newWork = await response.json();
+
+        // Refetch all works from localStorage and update
+        let allworks =
+          JSON.parse(window.localStorage.getItem("allworks")) || [];
+        allworks.push(newWork);
+        window.localStorage.setItem("allworks", JSON.stringify(allworks));
+        window.localStorage.setItem("openFirstModal", true);
+       
+          modalContainer.showModal();
+      
+
+        // add the new work to modal content 
+        const figure = document.createElement("figure");
+        figure.classList.add("fig");
+
+        const imageElement = document.createElement("img");
+        imageElement.src = newWork.imageUrl;
+        imageElement.classList.add("modal-img");
+
+        const trashBox = document.createElement("button");
+        trashBox.type = "button";
+        trashBox.classList.add("trash-box");
+
+        const trashIcon = document.createElement("img");
+        trashIcon.src = "./assets/icons/trash.svg";
+        trashIcon.alt = "Delete";
+        trashBox.appendChild(trashIcon);
+
+        trashBox.addEventListener("click", () => {
+          deleteWork(newWork.id, figure);
+        });
+
+        figure.appendChild(imageElement);
+        figure.appendChild(trashBox);
+        modalContent.insertBefore(figure, modalLine);
+
+          //to refresh the gallery(especialy to get category!!!)
+          getWorks();
+      } else {
+        console.error("Failed to add work:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error adding work:", error);
+    }
+  });
+}
 
 const token = localStorage.getItem("token");
 const heroBtn = document.querySelector("#hero");
@@ -348,7 +380,7 @@ if (token != null) {
 }
 
 function logout() {
-  localStorage.removeItem("token");
+ localStorage.removeItem("token");
 
   heroBtn.style.display = "none";
   editBtn.style.display = "none";
@@ -360,8 +392,17 @@ function logout() {
 logBtn.addEventListener("click", logout);
 
 window.onclick = async (event) => {
+    const addModal = document.getElementById("addModal");
   if (event.target === modalContainer) {
-    modalContainer.close;
-    await closeAndUpdate(); 
+    modalContainer.close();
+    addModal.close();
+    await closeAndUpdate();
   }
+  
 };
+
+window.addEventListener('popstate', function(event) {
+  // Perform logout action
+  logout();
+});
+console.log(token);
