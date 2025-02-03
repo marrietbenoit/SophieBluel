@@ -41,11 +41,12 @@ function generateWorks(works) {
 }
 
 // Fetch and generate category filter buttons
+// Store categories in localStorage
 async function getCategories() {
   try {
     const response = await fetch("http://localhost:5678/api/categories");
     const categories = await response.json();
-    window.localStorage.setItem("allbtn", JSON.stringify(categories)); // Store categories in localStorage
+    window.localStorage.setItem("allbtn", JSON.stringify(categories));
     generateCategoryButtons(categories);
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -62,11 +63,14 @@ function generateCategoryButtons(categories) {
   const btnTous = document.createElement("button");
   btnTous.classList.add("filter-btns", "tous-btn");
   btnTous.innerText = "Tous";
+
   btnTous.addEventListener("click", () => {
     setActiveButton(btnTous);
-    generateWorks(allworks); // Show all works
+    generateWorks(allworks);
   });
   filterSection.appendChild(btnTous);
+  setActiveButton(btnTous);
+  generateWorks(allworks);
 
   // Create category-specific buttons
   categories.forEach((category) => {
@@ -83,7 +87,7 @@ function generateCategoryButtons(categories) {
     filterSection.appendChild(btn);
   });
 }
-
+//-------------------------------------------------
 // Set active button style
 function setActiveButton(activeButton) {
   document.querySelectorAll(".filter-btns").forEach((btn) => {
@@ -103,7 +107,7 @@ const closeDialogBtn = modalBtns.querySelector(".close");
 const modalBtn = modalContent.querySelector(".modal-btn");
 const worksGallery = modalContent.querySelectorAll(".fig"); // Static placeholder; updated dynamically
 const modalLine = modalContent.querySelector(".modal-line");
-
+const addModal = document.getElementById("addModal");
 // State for temporary works
 let tempWorks = [...allworks];
 
@@ -112,12 +116,12 @@ btn.addEventListener("click", () => {
   modalContainer.showModal();
   generateModalContent();
 });
-console.log( window.localStorage.getItem("openFirstModal") == "true");
+console.log(window.localStorage.getItem("openFirstModal") == "true");
 
-if ( window.localStorage.getItem("openFirstModal") !== null){
+if (window.localStorage.getItem("openFirstModal") !== null) {
   modalContainer.showModal();
   generateModalContent();
-};
+}
 
 // Close the modal and update API on close
 closeDialogBtn.addEventListener("click", () => {
@@ -180,7 +184,7 @@ function deleteWork(id, figureElement) {
 
 // Function to close the modal and update the API
 async function closeAndUpdate() {
-   window.localStorage.removeItem("openFirstModal")  ;
+  window.localStorage.removeItem("openFirstModal");
   try {
     const token = localStorage.getItem("token");
 
@@ -319,7 +323,6 @@ function setupAddModal() {
       });
 
       if (response.ok) {
-        
         const newWork = await response.json();
 
         // Refetch all works from localStorage and update
@@ -328,11 +331,10 @@ function setupAddModal() {
         allworks.push(newWork);
         window.localStorage.setItem("allworks", JSON.stringify(allworks));
         window.localStorage.setItem("openFirstModal", true);
-       
-          modalContainer.showModal();
-      
 
-        // add the new work to modal content 
+        modalContainer.showModal();
+
+        // add the new work to modal content
         const figure = document.createElement("figure");
         figure.classList.add("fig");
 
@@ -357,8 +359,8 @@ function setupAddModal() {
         figure.appendChild(trashBox);
         modalContent.insertBefore(figure, modalLine);
 
-          //to refresh the gallery(especialy to get category!!!)
-          getWorks();
+        //to refresh the gallery(especialy to get category!!!)
+        getWorks();
       } else {
         console.error("Failed to add work:", await response.text());
       }
@@ -380,7 +382,7 @@ if (token != null) {
 }
 
 function logout() {
- localStorage.removeItem("token");
+  localStorage.removeItem("token");
 
   heroBtn.style.display = "none";
   editBtn.style.display = "none";
@@ -392,17 +394,11 @@ function logout() {
 logBtn.addEventListener("click", logout);
 
 window.onclick = async (event) => {
-    const addModal = document.getElementById("addModal");
-  if (event.target === modalContainer) {
+  if (event.target === modalContainer || event.target === addModal) {
     modalContainer.close();
     addModal.close();
     await closeAndUpdate();
   }
-  
 };
 
-window.addEventListener('popstate', function(event) {
-  // Perform logout action
-  logout();
-});
 console.log(token);
