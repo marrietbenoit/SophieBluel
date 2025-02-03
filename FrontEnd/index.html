@@ -17,7 +17,7 @@
 </head>
 
 <body>
-	<header id="hero" class="hero"  class="active">
+	<header id="hero" class="hero" class="active">
 		<p><img id="hero-img" class="hidden" src="./assets/icons/edit-white.svg" alt="">Mode édition</p>
 	</header>
 
@@ -134,16 +134,20 @@
 					+ Ajouter photo
 					<input type="file" accept="image/*" required>
 				</button>
+				<p>jpg. png : 4mo max</p>
 			</div>
-			<form enctype="multipart/form-data" method="POST" >
-				<label for="title">Titre :</label>
-				<input type="text" id="title" name="title"  required>
-				<label for="category">Catégorie :</label>
+			<form enctype="multipart/form-data" method="POST">
+				<label for="title">Titre </label>
+				<input type="text" id="title" name="title" required>
+				<label for="category">Catégorie </label>
 				<select id="category" name="category" required>
 					<option value=""></option>
-					
 				</select>
-				<button type="submit"  class="addWindowBtn">Valider</button>
+
+					<!-- Add a dividing line -->
+					<div class="addModal-line"></div>
+
+				<button type="submit" class="addWindowBtn">Valider</button>
 			</form>
 		</div>
 	</dialog>

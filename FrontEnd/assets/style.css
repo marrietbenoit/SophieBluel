@@ -238,9 +238,15 @@ li:hover {
 }
 
 .modal-container{
-  width: 50%;
+  max-width: 35%;
   border-radius: 25px;
   border: none;
+  overflow: hidden;
+}
+.modal-container-title > h4{
+  margin:auto;
+  font-size: 25px;
+  margin-top: -3rem;
 }
 dialog::backdrop{
    background-color: rgba(0, 0, 0, 0.4);
@@ -248,11 +254,12 @@ dialog::backdrop{
 
 .modal-content {
   display: flex;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.24rem;
- 
-  
+  margin-left: 7.5%;
+  margin-right: 7.5%;
+  gap: .5rem;
 }
 .modal-content > div {
   position: relative;
@@ -336,7 +343,7 @@ dialog::backdrop{
 }
 
 .add-modal-container{
-  width: 50%;
+  width: 35%;
   border-radius: 25px;
   border: none;
 }
@@ -364,16 +371,15 @@ border-radius: 25px;
   display: flex;
   justify-self: center;
   max-width: 75%;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 5px;
-  
 }
 
 .addModal-content > form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  width: 60%;
+  width: 75%;
 }
 .addModal-content > form > input,
 select {
@@ -386,19 +392,25 @@ select {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
-  width: 50%;
+  width: 75%;
   background-color: #e8f1f6;
   color: #306685;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.addUploadWindow > p{
+color:#a7a7a7 ;
+font-size: x-small;
 }
 .addWindowBtn {
-  background-color: #cbd6dc;
+  background-color: #a7a7a7;
   border: none;
-  color: #306685;
+  color: white;
   font-family: "Syne";
   font-weight: 700;
-  margin: 2em auto;
-  height: 3rem;
+  margin: 1rem auto;
+  height: 2rem;
+  width: 55%;
   text-align: center;
   border-radius: 60px;
   border: none;
@@ -413,21 +425,28 @@ select {
 }
 
 .upload-btn {
+  position: relative;
   background-color: #cbd6dc;
   border: none;
   color: #306685;
   font-family: "Syne";
   font-weight: 700;
-  margin: 2em auto;
-  width: 50%;
-  height: 2.5rem;
+  margin: 1rem auto;
+  height: 2rem;
+  max-width: 50%;
+  text-align: center;
   border-radius: 60px;
   border: none;
 }
-.upload-btn > input {
-  opacity: 0;
+
+.upload-btn input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 100%;
-  height: 2.5rem;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 .addModal-line {
   border-bottom: 1px solid #b3b3b3;
@@ -444,11 +463,11 @@ select {
   font-weight: 700;
   color: #1d6154;
   background-color: white;
-  margin: 1.5rem auto;
+  margin: .5rem auto;
   height: 2rem;
-  min-width: 5rem;
   text-align: center;
   border-radius: 60px;
+  border: 1px solid  #1d6154;
 }
 
 .gallery {

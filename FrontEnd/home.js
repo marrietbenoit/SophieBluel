@@ -1,4 +1,4 @@
-// Retrieve "works" from API or localStorage
+//Verify if works exist in localStorage
 let allworks = JSON.parse(window.localStorage.getItem("allworks"));
 
 if (!allworks) {
@@ -7,7 +7,7 @@ if (!allworks) {
   generateWorks(allworks); // Use works from localStorage if available
 }
 
-// Fetch "works" from API and store in localStorage
+//***  1  ***/ Fetch "works" from API and store in localStorage
 async function getWorks() {
   try {
     const response = await fetch("http://localhost:5678/api/works");
@@ -20,7 +20,7 @@ async function getWorks() {
   }
 }
 
-// Generate gallery works
+//***  1:b  ***/ Generate gallery works
 function generateWorks(works) {
   const gallery = document.querySelector(".gallery");
   gallery.innerHTML = "";
@@ -40,7 +40,7 @@ function generateWorks(works) {
   });
 }
 
-// Fetch and generate category filter buttons
+//** 2 **/ Fetch and generate category filter buttons
 // Store categories in localStorage
 async function getCategories() {
   try {
@@ -54,7 +54,7 @@ async function getCategories() {
 }
 getCategories();
 
-// Generate filter buttons and attach functionality
+//** 2:b **/ Generate filter buttons and attach functionality
 function generateCategoryButtons(categories) {
   const filterSection = document.querySelector(".filtres");
   filterSection.innerHTML = ""; // Clear any existing buttons
@@ -87,8 +87,8 @@ function generateCategoryButtons(categories) {
     filterSection.appendChild(btn);
   });
 }
-//-------------------------------------------------
-// Set active button style
+
+//** 2:c **/ Set active button style
 function setActiveButton(activeButton) {
   document.querySelectorAll(".filter-btns").forEach((btn) => {
     btn.style.backgroundColor = "#ffffff";
@@ -111,7 +111,7 @@ const addModal = document.getElementById("addModal");
 // State for temporary works
 let tempWorks = [...allworks];
 
-// Open the modal on button click
+//** 3:b **/ Open the modal on button click
 btn.addEventListener("click", () => {
   modalContainer.showModal();
   generateModalContent();
@@ -123,7 +123,7 @@ if (window.localStorage.getItem("openFirstModal") !== null) {
   generateModalContent();
 }
 
-// Close the modal and update API on close
+//*** 3:c **/ Close the modal and update API on close
 closeDialogBtn.addEventListener("click", () => {
   modalContainer.close();
   closeAndUpdate();
@@ -166,7 +166,7 @@ function generateModalContent() {
   });
 }
 
-// Function to delete a work locally
+//*** 4 **/ Function to delete a work locally
 function deleteWork(id, figureElement) {
   try {
     // Remove from temporary state
@@ -370,6 +370,8 @@ function setupAddModal() {
   });
 }
 
+
+//***  3  ***Affichage d'un bouton d’édition si l’utilisateur est authentifié 
 const token = localStorage.getItem("token");
 const heroBtn = document.querySelector("#hero");
 const editBtn = document.querySelector("#myBtn");
