@@ -284,7 +284,7 @@ function setupAddModal() {
   function validateForm() {
     const titleFilled = titleInput.value.trim() !== "";
     const fileChosen = fileInput.files.length > 0;
-    const categorySelected = categorySelect.value !== ""; // Ensure category is selected
+    const categorySelected = categorySelect.value !== ""; 
 
     // Enable or disable the submit button based on validation
     if (titleFilled && fileChosen && categorySelected) {
@@ -309,7 +309,7 @@ function setupAddModal() {
     const formData = new FormData();
     formData.append("title", titleInput.value);
     formData.append("image", fileInput.files[0]);
-    formData.append("category", categorySelect.value); // Ensure category is sent
+    formData.append("category", categorySelect.value); // Make sure category is sent
 
     const token = localStorage.getItem("token");
 
@@ -359,6 +359,9 @@ function setupAddModal() {
         figure.appendChild(trashBox);
         modalContent.insertBefore(figure, modalLine);
 
+          // Reset the form
+      form.reset();
+      
         //to refresh the gallery(especialy to get category!!!)
         getWorks();
       } else {

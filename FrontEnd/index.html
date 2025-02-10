@@ -90,16 +90,16 @@
 
 	<dialog id="modal-container" class="modal-container">
 		<div class="close-back">
-			<!-- Close Button -->
+			
 			<span class="close">&times;</span>
 		</div>
 		<div class="modal-content">
-			<!-- Modal Title -->
+			
 			<div class="modal-container-title">
 				<h4>Galerie photo</h4>
 			</div>
 
-			<!-- Works Gallery -->
+			
 			<figure class="fig">
 				<img src="./assets/icons/picture.png" alt="Example Image" class="modal-img" />
 				<button type="button" class="trash-box">
@@ -107,10 +107,10 @@
 				</button>
 			</figure>
 
-			<!-- Add a dividing line -->
-			<div class="modal-line"></div>
+		
+			<hr class="modal-line"></hr>
 
-			<!-- Button to add a new photo -->
+			
 			<button class="modal-btn">Ajouter une photo</button>
 		</div>
 	</dialog>
@@ -126,30 +126,38 @@
 				<h4>Ajout photo</h4>
 			</div>
 
-			<div class="addUploadWindow">
-				<div class="previewBox">
-					<img src="./assets/icons/picture.png" alt="Preview Image" class="preview-img">
-				</div>
-				<button class="upload-btn">
-					+ Ajouter photo
-					<input type="file" accept="image/*" required>
-				</button>
-				<p>jpg. png : 4mo max</p>
-			</div>
 			<form enctype="multipart/form-data" method="POST">
+				
+				<div class="addUploadWindow">
+				  <div class="previewBox">
+					<img
+					  src="./assets/icons/picture.png"
+					  alt="Preview Image"
+					  class="preview-img"
+					  id="previewImage"
+					/>
+				  </div>
+		  
+				  <button type="button" class="upload-btn">
+					+ Ajouter photo
+					<input type="file" accept="image/*" required id="fileInput">
+				  </button>
+		  
+				  <p>jpg. png : 4mo max</p>
+				</div>
+		  
 				<label for="title">Titre </label>
 				<input type="text" id="title" name="title" required>
+		  
 				<label for="category">Catégorie </label>
 				<select id="category" name="category" required>
-					<option value=""></option>
+				  <option value=""></option>
 				</select>
-
-					<!-- Add a dividing line -->
-					<div class="addModal-line"></div>
-
+		  
+				<hr class="addModal-line"></hr>
+		  
 				<button type="submit" class="addWindowBtn">Valider</button>
-			</form>
-		</div>
+			  </form>
 	</dialog>
 
 
