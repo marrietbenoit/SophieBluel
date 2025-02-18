@@ -255,36 +255,62 @@ function setupAddModal() {
   fileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        previewBox.innerHTML = ""; // Clear previous preview
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.alt = "Preview";
-        img.classList.add("preview-img");
-        previewBox.appendChild(img);
-      };
-      reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewBox.innerHTML = ""; 
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.alt = "Preview";
+            img.classList.add("preview-img");
+            previewBox.appendChild(img);
+        };
+        reader.readAsDataURL(file);
     }
-  });
+});
 
-  // Fetch categories to populate the select dropdown
-  fetch("http://localhost:5678/api/categories")
-    .then((res) => res.json())
-    .then((categories) => {
-      categories.forEach((category) => {
-        const option = document.createElement("option");
-        option.value = category.id;
-        option.innerText = category.name;
-        categorySelect.appendChild(option);
-      });
+//  Reset file input & preview when user leaves
+window.addEventListener("beforeunload", resetInputs);
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) resetInputs();
+});
+
+// Reset when modal closes
+addModal.addEventListener("close", resetInputs);
+
+//  Function to reset file input & preview 
+function resetInputs() {
+    fileInput.value = ""; // Clears file input
+    previewBox.innerHTML = ""; // Clears preview
+    categorySelect.innerText = ""; // Resets category 
+}
+
+// Fetch categories to populate the select dropdown
+fetch("http://localhost:5678/api/categories")
+.then((res) => res.json())
+.then((categories) => {
+  categories.forEach((category , key) => {
+    if (key == 0 ){
+      const defaultoption = document.createElement("option");
+      defaultoption.value = 'default categorie';
+      defaultoption.innerText = '';
+      
+      categorySelect.appendChild(defaultoption);
+
+    }
+    
+          const option = document.createElement("option");
+            option.value = category.id;
+            option.innerText = category.name;
+            categorySelect.appendChild(option);
+        });
     });
 
-  // Form validation logic
+
+  // Validation 
   function validateForm() {
     const titleFilled = titleInput.value.trim() !== "";
     const fileChosen = fileInput.files.length > 0;
-    const categorySelected = categorySelect.value !== ""; 
+    const categorySelected = categorySelect.value !== "";
 
     // Enable or disable the submit button based on validation
     if (titleFilled && fileChosen && categorySelected) {
@@ -296,13 +322,13 @@ function setupAddModal() {
     }
   }
 
-  // Validate form when inputs change
+  // Validate form only when inputs change
   titleInput.addEventListener("input", validateForm);
   fileInput.addEventListener("change", validateForm);
   categorySelect.addEventListener("change", validateForm);
   validateForm();
 
-  // Handle form submission
+  // Form submission
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -359,9 +385,8 @@ function setupAddModal() {
         figure.appendChild(trashBox);
         modalContent.insertBefore(figure, modalLine);
 
-          // Reset the form
-      form.reset();
-      
+        // Reset the form
+        form.reset();
         //to refresh the gallery(especialy to get category!!!)
         getWorks();
       } else {
@@ -373,8 +398,7 @@ function setupAddModal() {
   });
 }
 
-
-//***  3  ***Affichage d'un bouton d’édition si l’utilisateur est authentifié 
+//***  3  ***Affichage d'un bouton d’édition si l’utilisateur est authentifié
 const token = localStorage.getItem("token");
 const heroBtn = document.querySelector("#hero");
 const editBtn = document.querySelector("#myBtn");
